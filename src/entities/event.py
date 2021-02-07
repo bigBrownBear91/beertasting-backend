@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String, DateTime
 from marshmallow import Schema, fields
 
-from .entity import Entity, Crud
+from .entity import Entity, Crud, Selector
 from src.database import Base, engine
 
 Base.metadata.create_all(bind=engine)
@@ -21,9 +21,7 @@ class Event(Base, Entity, Crud):
 
 
 class EventSchema(Schema):
-    id = fields.Number()
+    id = fields.String()
     name = fields.String()
     host = fields.String()
     date = fields.DateTime()
-    created_at = fields.DateTime()
-    updated_at = fields.DateTime()

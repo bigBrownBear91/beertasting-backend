@@ -27,32 +27,28 @@ class Crud:
         session.add(self)
         session.commit()
 
+    def update(self, session):
+        session.add(self)
+        session.commit()
+
+    def delete(self, session):
+        session.delete(self)
+        session.commit()
+
 
 class Selector:
-    def __init__(self, type):
-        self.type = type
-        self.result = None
+    @staticmethod
+    def select_by_id(session, id, type):
+        return session.query(type).get(id)
 
-    def select_by_id(self, session, id):
-        if self.result:
-            raise ValueError('This instance has already values loaded')
-
-        self.result = session.query(self.type).get(id)
-
-    def select_by_name(self, session, name):
-        if self.result:
-            raise ValueError('This instance has already values loaded')
-        if 'name' not in self.type.__dict__.keys():
-            raise TypeError('"Name" is not a column in this table')
-
-        resultset = session.query(self.type).filter_by(name=name).all()
+    @staticmethod
+    def select_by_name(session, name, type):
+        resultset = session.query(type).filter_by(name=name).all()
         if len(resultset) != 1:
             raise ValueError('There is none or more than one element with the given name')
 
-        self.result = resultset[0]
+        return resultset[0]
 
-    def select_all(self, session):
-        if self.result:
-            raise ValueError('This instance has already values loaded')
-
-        self.result = session.query(self.type).all()
+    @staticmethod
+    def select_all(session, type):
+        return session.query(type).all()
