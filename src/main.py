@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from entities.entity import Selector
-from entities.event import Event, EventSchema
+from entities.tables import Event, EventSchema
 from database import Session
 
 session = Session()

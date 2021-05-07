@@ -4,10 +4,11 @@ from flask_cors import cross_origin
 
 from src.database import Session
 from src.entities.entity import Selector
-from src.entities.event import Event, EventSchema
+from src.entities.tables import Event, EventSchema, Beer, BeerSchema
 
 session = Session()
 event_bp = Blueprint('event', __name__)
+beer_bp = Blueprint('beer', __name__)
 
 
 @event_bp.route('/')
@@ -66,3 +67,19 @@ def update_event():
     schema = EventSchema()
     event = schema.dump(event)
     return jsonify(event), 200
+
+
+@beer_bp.route('/beer', methods=['OPTIONS'])
+def allow_preflight_request():
+    return jsonify({'status_code': 200})
+
+
+@beer_bp.route('/beer', methods=['POST'])
+def add_beers():
+    data = json.loads(json.dumps(request.get_json()))
+    posted_beer = BeerSchema(only=('name')).load(data)
+    beer = Beer(**posted_beer)
+    beer.create(session)
+
+    new_beer = BeerSchema().dump(beer)
+    return jsonify(new_beer), 201
