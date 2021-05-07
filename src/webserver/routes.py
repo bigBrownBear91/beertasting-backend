@@ -2,11 +2,9 @@ import json
 from flask import jsonify, Blueprint, request
 from flask_cors import cross_origin
 
-from src.database import Session
-from src.entities.entity import Selector
-from src.entities.tables import Event, EventSchema, Beer, BeerSchema
+from src.data_model.model import Event, Beer
+from src.data_model.schemas import EventSchema, BeerSchema
 
-session = Session()
 event_bp = Blueprint('event', __name__)
 beer_bp = Blueprint('beer', __name__)
 
@@ -15,7 +13,7 @@ beer_bp = Blueprint('beer', __name__)
 @event_bp.route('/events', methods=['GET', 'OPTIONS'])
 @cross_origin()
 def get_events():
-    events = Selector.select_all(session, Event)
+    events = Event.get_all()
     schema = EventSchema(many=True)
     events_as_json = schema.dump(events)
     return jsonify(events_as_json), 200
@@ -24,7 +22,7 @@ def get_events():
 @event_bp.route('/event/<event_id>', methods=['GET'])
 @cross_origin()
 def get_event_by_id(event_id):
-    event = Selector.select_by_id(session, event_id, Event)
+    event = Event.select_by_id(event_id)
     schema = EventSchema()
     event_as_json = schema.dump(event)
     return jsonify(event_as_json), 200
@@ -40,7 +38,7 @@ def add_event():
     data = json.loads(json.dumps(request.get_json()))
     posted_event = EventSchema(only=('name', 'host', 'date')).load(data)
     event = Event(**posted_event)
-    event.create(session)
+    event.create_or_update()
 
     new_event = EventSchema().dump(event)
     return jsonify(new_event), 201
@@ -48,8 +46,8 @@ def add_event():
 
 @event_bp.route('/event/<event_id>', methods=['DELETE'])
 def delete_event(event_id):
-    event = Selector.select_by_id(session, event_id, Event)
-    event.delete(session)
+    event = Event.get_by_id(event_id)
+    event.delete()
 
     return jsonify({"result": "deleted"}), 200
 
@@ -58,11 +56,11 @@ def delete_event(event_id):
 def update_event():
     data = json.loads(json.dumps(request.get_json()))
     event_from_request = EventSchema().load(data)
-    event = Selector.select_by_id(session, event_from_request.get('id'), Event)
+    event = Event.get_by_id(event_from_request.get('id'))
     event.name = event_from_request.get('name')
     event.host = event_from_request.get('host')
     event.date = event_from_request.get('date')
-    event.update(session)
+    event.create_or_update()
 
     schema = EventSchema()
     event = schema.dump(event)
@@ -79,7 +77,7 @@ def add_beers():
     data = json.loads(json.dumps(request.get_json()))
     posted_beer = BeerSchema(only=('name')).load(data)
     beer = Beer(**posted_beer)
-    beer.create(session)
+    beer.create_or_update()
 
     new_beer = BeerSchema().dump(beer)
     return jsonify(new_beer), 201

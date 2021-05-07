@@ -13,6 +13,23 @@ class Base:
 
     id = Column(Integer, primary_key=True)
 
+    def delete(self):
+        session = Base._get_session()
+        session.delete(self)
+        session.commit()
+
+    @classmethod
+    def get_all(cls):
+        session = Base._get_session()
+        result = session.query(cls).all()
+        return result
+
+    @classmethod
+    def get_by_id(cls, id):
+        session = Base._get_session()
+        result = session.query(cls).get(id)
+        return result
+
     @classmethod
     def get_by_name(cls, name):
         session = Base._get_session()
@@ -48,13 +65,6 @@ class Event(Base):
         self.date = date
 
 
-class EventSchema(Schema):
-    id = fields.String()
-    name = fields.String()
-    host = fields.String()
-    date = fields.DateTime()
-
-
 class Beer(Base):
     __tablename__ = 'beers'
     name = Column(String)
@@ -68,13 +78,6 @@ class Beer(Base):
         self.brewery = brewery
         self.country = country
         self.event_id = event_id
-
-
-class BeerSchema(Schema):
-    id = fields.String()
-    name = fields.String()
-    brewery = fields.String()
-    country = fields.String()
 
 
 Base.metadata.create_all(connectors.ConnectSqlite().get_engine())
