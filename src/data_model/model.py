@@ -1,7 +1,6 @@
 from sqlalchemy import Column, String, Date, Integer, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.orm import relationship
-from marshmallow import Schema, fields
 
 import src.data_model.db_connection as connectors
 
@@ -52,7 +51,7 @@ Base = declarative_base(cls=Base)
 
 
 class Event(Base):
-    __tablename__ = 'events'
+    __tablename__ = 'event'
     name = Column(String)
     host = Column(String)
     date = Column(Date)
@@ -64,13 +63,16 @@ class Event(Base):
         self.host = host
         self.date = date
 
+    def __repr__(self):
+        return f'Id: {self.id}, name: {self.name}'
+
 
 class Beer(Base):
-    __tablename__ = 'beers'
+    __tablename__ = 'beer'
     name = Column(String)
     brewery = Column(String)
     country = Column(String)
-    event_id = Column(Integer, ForeignKey('events.id'))
+    event_id = Column(Integer, ForeignKey('event.id'))
 
     def __init__(self, name, brewery, country, event_id):
         super().__init__()
