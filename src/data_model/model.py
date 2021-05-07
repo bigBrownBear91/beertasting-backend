@@ -1,18 +1,44 @@
-from sqlalchemy import Column, String, DateTime, Integer, ForeignKey
+from sqlalchemy import Column, String, Date, Integer, ForeignKey
+from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.orm import relationship
 from marshmallow import Schema, fields
 
-from .entity import Entity, Crud, Selector
-from src.database import Base, engine
-
-Base.metadata.create_all(bind=engine)
+import src.data_model.db_connection as connectors
 
 
-class Event(Base, Entity, Crud):
+class Base:
+    @declared_attr
+    def __tablename__(cls):
+        return cls.__name__.lower()
+
+    id = Column(Integer, primary_key=True)
+
+    @classmethod
+    def get_by_name(cls, name):
+        session = Base._get_session()
+        result = session.query(cls).filter_by(name=name).one()
+        return result
+
+    def create_or_update(self):
+        session = Base._get_session()
+        session.add(self)
+        session.commit()
+
+    @staticmethod
+    def _get_session():
+        connector = connectors.ConnectSqlite()
+        session = connector.get_session()
+        return session
+
+
+Base = declarative_base(cls=Base)
+
+
+class Event(Base):
     __tablename__ = 'events'
     name = Column(String)
     host = Column(String)
-    date = Column(DateTime)
+    date = Column(Date)
     beers = relationship("Beer")
 
     def __init__(self, name, host, date):
@@ -29,7 +55,7 @@ class EventSchema(Schema):
     date = fields.DateTime()
 
 
-class Beer(Base, Entity, Crud):
+class Beer(Base):
     __tablename__ = 'beers'
     name = Column(String)
     brewery = Column(String)
@@ -49,3 +75,6 @@ class BeerSchema(Schema):
     name = fields.String()
     brewery = fields.String()
     country = fields.String()
+
+
+Base.metadata.create_all(connectors.ConnectSqlite().get_engine())
