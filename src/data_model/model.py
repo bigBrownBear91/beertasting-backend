@@ -21,18 +21,21 @@ class Base:
     def get_all(cls):
         session = Base._get_session()
         result = session.query(cls).all()
+        session.close()
         return result
 
     @classmethod
     def get_by_id(cls, id):
         session = Base._get_session()
         result = session.query(cls).get(id)
+        session.close()
         return result
 
     @classmethod
     def get_by_name(cls, name):
         session = Base._get_session()
         result = session.query(cls).filter_by(name=name).one()
+        session.close()
         return result
 
     def create_or_update(self):
@@ -44,6 +47,7 @@ class Base:
     def _get_session():
         connector = connectors.ConnectSqlite()
         session = connector.get_session()
+        create_all()
         return session
 
 
@@ -82,4 +86,6 @@ class Beer(Base):
         self.event_id = event_id
 
 
-Base.metadata.create_all(connectors.ConnectSqlite().get_engine())
+# is in it's own function because it has to be called every time when opening a session and not only when importing
+def create_all():
+    Base.metadata.create_all(connectors.ConnectSqlite().get_engine())
