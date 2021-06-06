@@ -67,6 +67,9 @@ class Event(Base):
         self.host = host
         self.date = date
 
+    def add_beer(self, beer):
+        self.beers.append(beer)
+
     def __repr__(self):
         return f'Id: {self.id}, name: {self.name}'
 
@@ -78,12 +81,11 @@ class Beer(Base):
     country = Column(String)
     event_id = Column(Integer, ForeignKey('event.id'))
 
-    def __init__(self, name, brewery, country, event_id):
+    def __init__(self, name, brewery, country):
         super().__init__()
         self.name = name
         self.brewery = brewery
         self.country = country
-        self.event_id = event_id
 
 
 # is in it's own function because it has to be called every time when opening a session and not only when importing
