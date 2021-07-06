@@ -1,4 +1,5 @@
 from src.data_model.orm_mapper import EventTable, BeerTable
+from src.data_model.schemas import EventSchema, BeerSchema
 
 
 class Event:
@@ -26,6 +27,11 @@ class Event:
         if len(beer) > 1:
             raise IndexError(f"More than one beer with the name {name} exists for this event")
         return beer[0]
+
+    def serialize(self):
+        # TODO: Test this method and (if working) replace serializing in routes.py
+        schema = EventSchema(many=True)
+        return schema.dump(self)
 
     def update(self):
         self._event.name = self.name

@@ -2,6 +2,7 @@ import json
 from flask import jsonify, Blueprint, request
 from flask_cors import cross_origin
 
+from src.data_model.model import Event
 from src.data_model.orm_mapper import EventTable, BeerTable
 from src.data_model.schemas import EventSchema, BeerSchema
 
@@ -22,9 +23,9 @@ def get_events():
 @event_bp.route('/event/<event_id>', methods=['GET'])
 @cross_origin()
 def get_event_by_id(event_id):
-    event = EventTable.select_by_id(event_id)
-    schema = EventSchema()
-    event_as_json = schema.dump(event)
+    # TODO: Test if serializing is working
+    event = Event(event_id)
+    event_as_json = event.serialize()
     return jsonify(event_as_json), 200
 
 
