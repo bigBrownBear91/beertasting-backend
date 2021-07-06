@@ -28,3 +28,6 @@ def test_get_beers_by_event(test_db):
     assert 'beer1' in [beer.name for beer in beers]
     assert 'beer3' in [beer.name for beer in beers]
     assert 'beer4' not in [beer.name for beer in beers]
+    assert isinstance(beers[0], BeerTable)
+    assert isinstance(beers[1], BeerTable)
+    assert isinstance(beers[2], BeerTable)
