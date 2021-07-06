@@ -16,13 +16,7 @@ def test_adding_beer_to_event():
 
 
 def test_get_beers_by_event(test_db):
-    event = EventTable('name', 'host', date(2021, 6, 21))
-    event.add_beer(BeerTable('beer1', 'brew1', 'ch'))
-    event.add_beer(BeerTable('beer2', 'brew2', 'ch'))
-    event.add_beer(BeerTable('beer3', 'brew2', 'ch'))
-    event.create_or_update()
-
-    event_got_again = event.get_by_name('name')
+    event_got_again = EventTable.get_by_name('test_name')
     beers = BeerTable.get_beer_by_event(event_got_again.id)
     assert len(beers) == 3
     assert 'beer1' in [beer.name for beer in beers]
