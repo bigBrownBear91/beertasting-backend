@@ -4,13 +4,7 @@ from src.data_model.schemas import EventSchema, BeerSchema
 
 class Event:
     def __init__(self, event_id=None, event_name=None):
-        # TODO: Replace ifs with asserts
-        if event_id is None and event_name is None:
-            raise ValueError("Either the id or the name of the event must be specified")
-        if event_id is not None and event_name is not None:
-            raise ValueError("It's not possible to specify the id and the name of the event")
-        if not (event_id is None or isinstance(event_id, int)):
-            raise ValueError("The id must be of type int")
+        assert event_id is None and event_name is not None or event_id is not None and event_name is None
 
         self._event = EventTable.get_by_id(event_id) if event_id is not None else EventTable.get_by_name(event_name)
         self._beers = BeerTable.get_beer_by_event(self._event.id)
@@ -30,7 +24,6 @@ class Event:
         return beer[0]
 
     def serialize(self):
-        # TODO: Test this method and (if working) replace serializing in routes.py
         schema = EventSchema(many=False)
         return schema.dump(self)
 

@@ -1,6 +1,6 @@
 import datetime
 from re import search
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 from src.data_model.model import Event
 from src.data_model.orm_mapper import BeerTable, EventTable

@@ -23,7 +23,6 @@ def get_events():
 @event_bp.route('/event/<event_id>', methods=['GET'])
 @cross_origin()
 def get_event_by_id(event_id):
-    # TODO: Test if serializing is working
     event = Event(event_id)
     event_as_json = event.serialize()
     return jsonify(event_as_json), 200
