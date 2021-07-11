@@ -93,6 +93,9 @@ class BeerTable(Base):
         event_beers = [beer for beer in all_beers if beer.event_id == event_id]
         return event_beers
 
+    def __eq__(self, other):
+        return self.name == other.name and self.brewery == other.brewery and self.country == other.country
+
 
 # is in it's own function because it has to be called every time when opening a session and not only when importing
 def create_all():

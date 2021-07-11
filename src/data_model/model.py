@@ -4,6 +4,7 @@ from src.data_model.schemas import EventSchema, BeerSchema
 
 class Event:
     def __init__(self, event_id=None, event_name=None):
+        # TODO: Replace ifs with asserts
         if event_id is None and event_name is None:
             raise ValueError("Either the id or the name of the event must be specified")
         if event_id is not None and event_name is not None:
@@ -30,7 +31,7 @@ class Event:
 
     def serialize(self):
         # TODO: Test this method and (if working) replace serializing in routes.py
-        schema = EventSchema(many=True)
+        schema = EventSchema(many=False)
         return schema.dump(self)
 
     def update(self):
